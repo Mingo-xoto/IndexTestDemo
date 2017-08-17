@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,23 +35,23 @@ public class TestService {
 	static Map<Integer, int[]> pMap = new HashMap<>();
 	static List<Integer> codes = new ArrayList<>();
 	static List<Integer> pCodes = new ArrayList<>();
+	static int count = 0;
+	static int times = 0;
 	static {
 		FileReaderTool.map(map, pMap, codes, pCodes, "area.txt", "\t\t", 2);
 	}
 
-	public void batchInsert() {
+	public int batchInsert() {
 		long begin = System.currentTimeMillis();
-		int count = 0;
-		for (int i = 0; i < 400; ++i) {
-			List<Human> list = buildList();
-			long end = System.currentTimeMillis();
-			System.out.println("累积耗时耗时1：" + (end - begin) + "豪秒");
-			testMapper.batchInsert(list);
-			count += list.size();
-			System.out.println("累积：" + count + "条");
-			end = System.currentTimeMillis();
-			System.out.println("累积耗时耗时：" + (end - begin) + "豪秒");
-		}
+		List<Human> list = buildList();
+		long end = System.currentTimeMillis();
+		testMapper.batchInsert(list);
+		count += list.size();
+		System.out.println("累积：" + count + "条");
+		end = System.currentTimeMillis();
+		System.out.println("累积耗时耗时：" + (end - begin) + "豪秒");
+		times++;
+		return times;
 	}
 
 	static DBHelper db1 = null;

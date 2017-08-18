@@ -20,15 +20,45 @@ public class TestController {
 	@Autowired
 	private TestService testService;
 
-	@RequestMapping("batch/insert")
-	public void testBatchInsert(int length, int loop) {
-		ExecutorService executorService = Executors.newFixedThreadPool(3);
-		for (int i = 0; i <= loop; ++i) {
+	@RequestMapping("batch/insert1")
+	public void testBatchInsert1(int length, int loop) {
+		ExecutorService executorService = Executors.newFixedThreadPool(loop);
+		for (int i = 0; i < loop; ++i) {
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
 					System.out.println(Thread.currentThread().getName() + "开始");
-					testService.batchInsert(length);
+					testService.batchInsert1(length);
+					System.out.println(Thread.currentThread().getName() + "结束");
+				}
+			});
+		}
+	}
+
+	@RequestMapping("batch/insert2")
+	public void testBatchInsert2(int length, int loop) {
+		ExecutorService executorService = Executors.newFixedThreadPool(loop);
+		for (int i = 0; i < loop; ++i) {
+			executorService.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "开始");
+					testService.batchInsert2(length);
+					System.out.println(Thread.currentThread().getName() + "结束");
+				}
+			});
+		}
+	}
+
+	@RequestMapping("batch/insert3")
+	public void testBatchInsert3(int length, int loop) {
+		ExecutorService executorService = Executors.newFixedThreadPool(loop);
+		for (int i = 0; i < loop; ++i) {
+			executorService.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "开始");
+					testService.batchInsert3(length);
 					System.out.println(Thread.currentThread().getName() + "结束");
 				}
 			});

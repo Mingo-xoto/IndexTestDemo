@@ -5,5 +5,10 @@ package com.yhq.IndexTestDemo.service;
  * @date 2017年8月18日
  */
 public interface ITestService {
-	public int batchInsert(int len);
+	
+	public int batchInsert1(int len);
+
+	public int batchInsert2(int len);
+
+	public int batchInsert3(int len);
 }

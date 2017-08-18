@@ -24,7 +24,7 @@ public class TestDemo {
 	@Test
 	public void test() {
 		for (int i = 0; i < 10; ++i) {
-			testService.batchInsert(1000000);
+			testService.batchInsert1(1000000);
 		}
 
 	}

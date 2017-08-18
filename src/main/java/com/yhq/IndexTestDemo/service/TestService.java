@@ -33,23 +33,40 @@ public class TestService implements ITestService {
 	@Autowired
 	private TestMapper testMapper;
 
-	static int count = 0;
-	static int times = 0;
-
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public int batchInsert(int len) {
+	public int batchInsert1(int len) {
 		long begin = System.currentTimeMillis();
-		System.out.println("开始构建插入列表");
 		List<Human> list = buildList(len);
 		long end = System.currentTimeMillis();
-		System.out.println("构建结束");
-		testMapper.batchInsert(list);
-		count += list.size();
-		System.out.println("累积：" + count + "条");
+		testMapper.batchInsertList(list);
+		int count = list.size();
 		end = System.currentTimeMillis();
-		System.out.println("累积耗时耗时：" + (end - begin) + "豪秒");
-		times++;
-		return times;
+		System.out.println("batchInsert1：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
+		return count;
+	}
+
+	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public int batchInsert2(int len) {
+		long begin = System.currentTimeMillis();
+		List<List<Object>> array = buildArray(len);
+		long end = System.currentTimeMillis();
+		testMapper.batchInsertArray(array);
+		int count = array.size();
+		end = System.currentTimeMillis();
+		System.out.println("batchInsert2：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
+		return count;
+	}
+
+	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public int batchInsert3(int len) {
+		long begin = System.currentTimeMillis();
+		Object[][] array = buildArray2(len);
+		long end = System.currentTimeMillis();
+		testMapper.batchInsertArray2(array);
+		int count = array.length;
+		end = System.currentTimeMillis();
+		System.out.println("batchInsert3：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
+		return count;
 	}
 
 	static DBHelper db1 = null;
@@ -93,92 +110,163 @@ public class TestService implements ITestService {
 			e.printStackTrace();
 		}
 
-		List<Human> list = new ArrayList<>();
+		List<Human> list = new ArrayList<>(len);
 		for (int count = 0; count < len; ++count) {
-			int occupation_rand = new Random().nextInt(6);
-			int education_rand = new Random().nextInt(7);
-			int sex_rand = new Random().nextInt(2);
-			int age_rand = new Random().nextInt(120);
-			// 随机生日
-			Calendar cal = Calendar.getInstance();
-			int year_rand = new Random().nextInt(10);
-			cal.add(Calendar.YEAR, -year_rand);
-			int month_rand = new Random().nextInt(12);
-			cal.add(Calendar.MONTH, -month_rand);
-			int day_rand = new Random().nextInt(365);
-			cal.add(Calendar.DAY_OF_MONTH, -day_rand);
-			int hour_rand = new Random().nextInt(24);
-			cal.add(Calendar.HOUR, -hour_rand);
-			int minute_rand = new Random().nextInt(60);
-			cal.add(Calendar.MINUTE, -minute_rand);
-			int second_rand = new Random().nextInt(60);
-			cal.add(Calendar.SECOND, -second_rand);
-			int m_second_rand = new Random().nextInt(1000);
-			cal.add(Calendar.MILLISECOND, -m_second_rand);
-			int adress_rand = new Random().nextInt(codes.size());
-			// 镇
-			int key = codes.get(adress_rand);
-			Object[] towns = map.get(key);
-			int tkey;
-			int ttype = (int) towns[2];
-			String town;
-			if (ttype == AreaTypeEnum.STREET.ordinal() + 1) {
-				town = (String) towns[0];
-				tkey = (int) towns[1];
-			} else {
-				town = "未规划镇级";
-				tkey = key;
-			}
-			// 村
-			String village = ChineseName.getChinese() + "村";
-			// 区
-			int dinfos[] = pMap.get(tkey);
-			Object[] districts = map.get(dinfos[0]);
-			int dtype = (int) districts[2];
-			String district;
-			int dkey;
-			if (dtype == AreaTypeEnum.DISTRICT.ordinal() + 1) {
-				district = (String) districts[0];
-				dkey = (int) districts[1];
-			} else {
-				district = "未规划地区级";
-				dkey = key;
-			}
-			// 市
-			int cinfos[] = pMap.get(dkey);
-
-			Object citys[] = map.get(cinfos[0]);
-			int ctype = (int) citys[2];
-			String city;
-			int ckey;
-			if (ctype == AreaTypeEnum.CITY.ordinal() + 1) {
-				city = (String) citys[0];
-				ckey = (int) citys[1];
-			} else {
-				city = "未规划市级";
-				ckey = dkey;
-			}
-			// 省
-			int pinfos[] = pMap.get(ckey);
-			Object provinces[] = map.get(pinfos[0]);
-			int ptype = (int) provinces[2];
-			String province;
-			int pkey;
-			if (ptype == AreaTypeEnum.PROVINCE.ordinal() + 1) {
-				province = (String) provinces[0];
-				pkey = (int) provinces[1];
-			} else {
-				province = "未规划省级";
-				pkey = ckey;
-			}
-			if (province.equals("中华人民共和国")) {
-				System.out.println();
-			}
-			Human person = new Human(ChineseName.getRandomName(), age_rand, sex_rand == 0 ? false : true, occupation_rand, education_rand, cal.getTime(), city,
-					province + city + district + town + village + new Random().nextInt(200) + "号", town, village, province, district);
+			Human person = buildHuman(map, pMap, codes);
 			list.add(person);
 		}
 		return list;
+	}
+
+	private Object[][] buildArray2(int len) {
+		Map<Integer, Object[]> map = new HashMap<>();
+		Map<Integer, int[]> pMap = new HashMap<>();
+		List<Integer> codes = new ArrayList<>();
+		List<Integer> pCodes = new ArrayList<>();
+		try {
+			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		Object[][] array = new Object[len][12];
+		for (int count = 0; count < len; ++count) {
+			Human human = buildHuman(map, pMap, codes);
+			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
+			int i = 0;
+			array[count][i++] = human.getName();
+			array[count][i++] = human.getAge();
+			array[count][i++] = human.isSex();
+			array[count][i++] = human.getOccupation();
+			array[count][i++] = human.getEducation();
+			array[count][i++] = human.getBirthday();
+			array[count][i++] = human.getCity();
+			array[count][i++] = human.getAdress();
+			array[count][i++] = human.getTown();
+			array[count][i++] = human.getVillage();
+			array[count][i++] = human.getProvince();
+			array[count][i++] = human.getDistrict();
+		}
+		return array;
+	}
+
+	private List<List<Object>> buildArray(int len) {
+		Map<Integer, Object[]> map = new HashMap<>();
+		Map<Integer, int[]> pMap = new HashMap<>();
+		List<Integer> codes = new ArrayList<>();
+		List<Integer> pCodes = new ArrayList<>();
+		try {
+			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		List<List<Object>> array = new ArrayList<List<Object>>(len);
+		for (int count = 0; count < len; ++count) {
+			Human human = buildHuman(map, pMap, codes);
+			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
+			int i = 0;
+			ArrayList<Object> array1 = new ArrayList<Object>();
+			array1.add(human.getName());
+			array1.add(human.getAge());
+			array1.add(human.isSex());
+			array1.add(human.getOccupation());
+			array1.add(human.getEducation());
+			array1.add(human.getBirthday());
+			array1.add(human.getCity());
+			array1.add(human.getAdress());
+			array1.add(human.getTown());
+			array1.add(human.getVillage());
+			array1.add(human.getProvince());
+			array1.add(human.getDistrict());
+			array.add(array1);
+		}
+		return array;
+	}
+
+	private Human buildHuman(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes) {
+		int occupation_rand = new Random().nextInt(6);
+		int education_rand = new Random().nextInt(7);
+		int sex_rand = new Random().nextInt(2);
+		int age_rand = new Random().nextInt(120);
+		// 随机生日
+		Calendar cal = Calendar.getInstance();
+		int year_rand = new Random().nextInt(10);
+		cal.add(Calendar.YEAR, -year_rand);
+		int month_rand = new Random().nextInt(12);
+		cal.add(Calendar.MONTH, -month_rand);
+		int day_rand = new Random().nextInt(365);
+		cal.add(Calendar.DAY_OF_MONTH, -day_rand);
+		int hour_rand = new Random().nextInt(24);
+		cal.add(Calendar.HOUR, -hour_rand);
+		int minute_rand = new Random().nextInt(60);
+		cal.add(Calendar.MINUTE, -minute_rand);
+		int second_rand = new Random().nextInt(60);
+		cal.add(Calendar.SECOND, -second_rand);
+		int m_second_rand = new Random().nextInt(1000);
+		cal.add(Calendar.MILLISECOND, -m_second_rand);
+		int adress_rand = new Random().nextInt(codes.size());
+		// 镇
+		int key = codes.get(adress_rand);
+		Object[] towns = map.get(key);
+		int tkey;
+		int ttype = (int) towns[2];
+		String town;
+		if (ttype == AreaTypeEnum.STREET.ordinal() + 1) {
+			town = (String) towns[0];
+			tkey = (int) towns[1];
+		} else {
+			town = "未规划镇级";
+			tkey = key;
+		}
+		// 村
+		String village = ChineseName.getChinese() + "村";
+		// 区
+		int dinfos[] = pMap.get(tkey);
+		Object[] districts = map.get(dinfos[0]);
+		int dtype = (int) districts[2];
+		String district;
+		int dkey;
+		if (dtype == AreaTypeEnum.DISTRICT.ordinal() + 1) {
+			district = (String) districts[0];
+			dkey = (int) districts[1];
+		} else {
+			district = "未规划地区级";
+			dkey = key;
+		}
+		// 市
+		int cinfos[] = pMap.get(dkey);
+
+		Object citys[] = map.get(cinfos[0]);
+		int ctype = (int) citys[2];
+		String city;
+		int ckey;
+		if (ctype == AreaTypeEnum.CITY.ordinal() + 1) {
+			city = (String) citys[0];
+			ckey = (int) citys[1];
+		} else {
+			city = "未规划市级";
+			ckey = dkey;
+		}
+		// 省
+		int pinfos[] = pMap.get(ckey);
+		Object provinces[] = map.get(pinfos[0]);
+		int ptype = (int) provinces[2];
+		String province;
+		int pkey;
+		if (ptype == AreaTypeEnum.PROVINCE.ordinal() + 1) {
+			province = (String) provinces[0];
+			pkey = (int) provinces[1];
+		} else {
+			province = "未规划省级";
+			pkey = ckey;
+		}
+		if (province.equals("中华人民共和国")) {
+			System.out.println();
+		}
+		Human person = new Human(ChineseName.getRandomName(), age_rand, sex_rand == 0 ? false : true, occupation_rand, education_rand, cal.getTime(), city,
+				province + city + district + town + village + new Random().nextInt(200) + "号", town, village, province, district);
+		return person;
 	}
 
 	private static void insertPersonData() {

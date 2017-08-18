@@ -5,7 +5,7 @@ CREATE TABLE `area` (
   `areap_parent_code` varchar(10) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '上级区域编码',
   `area_type` int(11) NOT NULL DEFAULT '0' COMMENT '区域类型（1国家2省3市4区5街道）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=113550 DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE `person` (
@@ -24,23 +24,5 @@ CREATE TABLE `person` (
   `district` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '区',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-CREATE TABLE `human` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '姓名',
-  `age` int(11) NOT NULL DEFAULT '0' COMMENT '年龄',
-  `sex` tinyint(4) NOT NULL DEFAULT '0' COMMENT '性别',
-  `occupation` int(11) NOT NULL DEFAULT '0' COMMENT '职业',
-  `education` int(11) NOT NULL DEFAULT '0' COMMENT '学历',
-  `birthday` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生日',
-  `city` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '所在城市',
-  `adress` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '详细地址',
-  `town` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '镇',
-  `village` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '村',
-  `province` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '省份',
-  `district` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '区',
-  PRIMARY KEY (`id`),
-  KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=113550 DEFAULT CHARSET=latin1;
 

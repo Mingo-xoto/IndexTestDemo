@@ -1,3 +1,4 @@
+
 CREATE TABLE `area` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `area_code` varchar(10) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '地区码',

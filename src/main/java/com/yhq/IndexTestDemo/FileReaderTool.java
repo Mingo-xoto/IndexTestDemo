@@ -19,7 +19,7 @@ import com.yhq.IndexTestDemo.Constants.FamilyName;
 public class FileReaderTool {
 
 	public static void read(List<String[]> values, String fileName, String fix, int skipLine) {
-		File file = new File(FamilyName.class.getResource("").getPath() + "../files/" + fileName);
+		File file = new File(fileName);
 		FileInputStream fis = null;
 		BufferedReader br = null;
 		try {
@@ -51,8 +51,7 @@ public class FileReaderTool {
 		}
 	}
 
-	public static void map(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes, List<Integer> pCodes, String fileName, String fix, int skipLine) {
-		File file = new File(FamilyName.class.getResource("").getPath() + "../files/" + fileName);
+	public static void map(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes, List<Integer> pCodes, File file, String fix, int skipLine) {
 		FileInputStream fis = null;
 		BufferedReader br = null;
 		try {

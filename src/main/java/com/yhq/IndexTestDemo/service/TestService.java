@@ -1,5 +1,6 @@
 package com.yhq.IndexTestDemo.service;
 
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,11 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 import com.yhq.IndexTestDemo.ChineseName;
 import com.yhq.IndexTestDemo.FileReaderTool;
@@ -26,25 +28,21 @@ import com.yhq.IndexTestDemo.enums.AreaTypeEnum;
 import com.yhq.IndexTestDemo.pojo.Human;
 
 @Service
-public class TestService {
+public class TestService implements ITestService {
 
 	@Autowired
 	private TestMapper testMapper;
 
-	static Map<Integer, Object[]> map = new HashMap<>();
-	static Map<Integer, int[]> pMap = new HashMap<>();
-	static List<Integer> codes = new ArrayList<>();
-	static List<Integer> pCodes = new ArrayList<>();
 	static int count = 0;
 	static int times = 0;
-	static {
-		FileReaderTool.map(map, pMap, codes, pCodes, "area.txt", "\t\t", 2);
-	}
 
-	public int batchInsert() {
+	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public int batchInsert(int len) {
 		long begin = System.currentTimeMillis();
-		List<Human> list = buildList();
+		System.out.println("开始构建插入列表");
+		List<Human> list = buildList(len);
 		long end = System.currentTimeMillis();
+		System.out.println("构建结束");
 		testMapper.batchInsert(list);
 		count += list.size();
 		System.out.println("累积：" + count + "条");
@@ -84,9 +82,19 @@ public class TestService {
 		}
 	}
 
-	private List<Human> buildList() {
+	private List<Human> buildList(int len) {
+		Map<Integer, Object[]> map = new HashMap<>();
+		Map<Integer, int[]> pMap = new HashMap<>();
+		List<Integer> codes = new ArrayList<>();
+		List<Integer> pCodes = new ArrayList<>();
+		try {
+			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 		List<Human> list = new ArrayList<>();
-		for (int count = 0; count < 100000; ++count) {
+		for (int count = 0; count < len; ++count) {
 			int occupation_rand = new Random().nextInt(6);
 			int education_rand = new Random().nextInt(7);
 			int sex_rand = new Random().nextInt(2);
@@ -179,7 +187,12 @@ public class TestService {
 			Map<Integer, int[]> pMap = new HashMap<>();
 			List<Integer> codes = new ArrayList<>();
 			List<Integer> pCodes = new ArrayList<>();
-			FileReaderTool.map(map, pMap, codes, pCodes, "area.txt", "\t\t", 2);
+			try {
+				FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Long begin = System.currentTimeMillis();
 			Connection conn = new DBHelper().getConnection();
 			conn.setAutoCommit(false);

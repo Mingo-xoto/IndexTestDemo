@@ -1,10 +1,10 @@
-package com.yhq.IndexTestDemo.dao;
+package com.yhq.IndexTestDemo.web.dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 
-import com.yhq.IndexTestDemo.pojo.Human;
+import com.yhq.IndexTestDemo.web.pojo.Human;
 
 /**
  * @author HuaQi.Yang
@@ -33,7 +33,7 @@ public interface TestMapper {
 	void batchInsertArray(List<List<Object>> array);
 
 	@Insert("<script>" 
-			+ "insert into human(name,age,sex,occupation,education,birthday,city,adress,town,village,province,district) values"
+			+ "insert into person(name,age,sex,occupation,education,birthday,city,adress,town,village,province,district,thread,create_time,hash_code) values"
 			+ "<foreach collection=\"array\" item=\"item\" index=\"index\" separator=\",\">" 
 			+ "(" 
 			+ "<foreach collection=\"item\" item=\"e\" index=\"index\" separator=\",\">"

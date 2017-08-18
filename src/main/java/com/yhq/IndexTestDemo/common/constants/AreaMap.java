@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.Constants;
+package com.yhq.IndexTestDemo.common.constants;
 
 import java.io.BufferedReader;
 import java.io.File;

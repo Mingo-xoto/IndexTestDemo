@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@MapperScan("com.yhq.IndexTestDemo.dao")
+@MapperScan("com.yhq.IndexTestDemo.web.dao")
 public class App {
 
 	public static void main(String[] args) {

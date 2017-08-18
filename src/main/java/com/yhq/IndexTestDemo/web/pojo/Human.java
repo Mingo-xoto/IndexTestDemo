@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.pojo;
+package com.yhq.IndexTestDemo.web.pojo;
 
 import java.util.Date;
 
@@ -10,13 +10,13 @@ import java.util.Date;
  * @author HuaQi.Yang
  * @date 2017年8月17日
  */
-public class Person {
+public class Human {
 
 	private int id;
 	private String name;// ` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '姓名',
 	private int age;// ` int(11) NOT NULL DEFAULT '0' COMMENT '年龄',
 	private boolean sex;// ` tinyint(4) NOT NULL DEFAULT '0' COMMENT '性别',
-	private String occupation;// ` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '职业',
+	private int occupation;// ` int(11) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '职业',
 	private int education;// ` int(11) NOT NULL DEFAULT '0' COMMENT '学历',
 	private Date birthday;// ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生日',
 	private String city;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '所在城市',
@@ -58,11 +58,11 @@ public class Person {
 		this.sex = sex;
 	}
 
-	public String getOccupation() {
+	public int getOccupation() {
 		return occupation;
 	}
 
-	public void setOccupation(String occupation) {
+	public void setOccupation(int occupation) {
 		this.occupation = occupation;
 	}
 
@@ -130,7 +130,7 @@ public class Person {
 		this.district = district;
 	}
 
-	public Person(String name, int age, boolean sex, String occupation, int education, Date birthday, String city, String adress, String town, String village, String province,
+	public Human(String name, int age, boolean sex, int occupation, int education, Date birthday, String city, String adress, String town, String village, String province,
 			String district) {
 		super();
 		this.name = name;

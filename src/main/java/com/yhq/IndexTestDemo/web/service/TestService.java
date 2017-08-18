@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.service;
+package com.yhq.IndexTestDemo.web.service;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -9,10 +9,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,10 +25,10 @@ import org.springframework.util.ResourceUtils;
 
 import com.yhq.IndexTestDemo.ChineseName;
 import com.yhq.IndexTestDemo.FileReaderTool;
-import com.yhq.IndexTestDemo.connection.DBHelper;
-import com.yhq.IndexTestDemo.dao.TestMapper;
-import com.yhq.IndexTestDemo.enums.AreaTypeEnum;
-import com.yhq.IndexTestDemo.pojo.Human;
+import com.yhq.IndexTestDemo.common.connection.DBHelper;
+import com.yhq.IndexTestDemo.common.enums.AreaTypeEnum;
+import com.yhq.IndexTestDemo.web.dao.TestMapper;
+import com.yhq.IndexTestDemo.web.pojo.Human;
 
 @Service
 public class TestService implements ITestService {
@@ -33,40 +36,60 @@ public class TestService implements ITestService {
 	@Autowired
 	private TestMapper testMapper;
 
+	private AtomicInteger count = new AtomicInteger(0);
+	private AtomicLong time = new AtomicLong(0);
+
+	final static ThreadLocal<Object[][]> localObjects = new ThreadLocal<>();
+	final static ThreadLocal<ArrayList<List<Object>>> localArrayObject = new ThreadLocal<>();
+
+	final static ThreadLocal<List<Human>> localHumans = new ThreadLocal<>();
+
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public int batchInsert1(int len) {
+	public void batchInsert1(int len) {
 		long begin = System.currentTimeMillis();
 		List<Human> list = buildList(len);
 		long end = System.currentTimeMillis();
 		testMapper.batchInsertList(list);
-		int count = list.size();
+		// count.addAndGet(list.size());
 		end = System.currentTimeMillis();
-		System.out.println("batchInsert1：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
-		return count;
+		// time.addAndGet(end - begin);
+		System.out.println("batchInsert1：" + Thread.currentThread().getName() + "插入" + list.size() + "条,耗时："
+				+ (end - begin) + "豪秒");
+		// System.out.println(
+		// "batchInsert1：" + Thread.currentThread().getName() + "插入" +
+		// count.intValue() + "条,耗时：" + time.longValue() + "豪秒");
 	}
 
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public int batchInsert2(int len) {
+	public void batchInsert2(int len) {
 		long begin = System.currentTimeMillis();
 		List<List<Object>> array = buildArray(len);
 		long end = System.currentTimeMillis();
 		testMapper.batchInsertArray(array);
-		int count = array.size();
+		count.addAndGet(array.size());
 		end = System.currentTimeMillis();
-		System.out.println("batchInsert2：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
-		return count;
+		time.addAndGet(end - begin);
+		System.out.println("batchInsert2：" + Thread.currentThread().getName() + "插入" + count.intValue() + "条,耗时："
+				+ time.longValue() + "豪秒");
 	}
 
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public int batchInsert3(int len) {
+	public void batchInsert3(int len) {
 		long begin = System.currentTimeMillis();
 		Object[][] array = buildArray2(len);
 		long end = System.currentTimeMillis();
 		testMapper.batchInsertArray2(array);
-		int count = array.length;
+		count.addAndGet(array.length);
 		end = System.currentTimeMillis();
-		System.out.println("batchInsert3：" + Thread.currentThread().getName() + "插入" + count + "条,耗时：" + (end - begin) + "豪秒");
-		return count;
+		time.addAndGet(end - begin);
+		System.out.println("batchInsert3：" + Thread.currentThread().getName() + "插入" + count.intValue() + "条,耗时："
+				+ time.longValue() + "豪秒");
+	}
+
+	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void batchInsert4(int len) {
+		Object[][] array = buildArray2(len);
+		testMapper.batchInsertArray2(array);
 	}
 
 	static DBHelper db1 = null;
@@ -110,7 +133,10 @@ public class TestService implements ITestService {
 			e.printStackTrace();
 		}
 
-		List<Human> list = new ArrayList<>(len);
+		if (localHumans.get() == null) {
+			localHumans.set(new ArrayList<Human>(len));
+		}
+		List<Human> list = localHumans.get();
 		for (int count = 0; count < len; ++count) {
 			Human person = buildHuman(map, pMap, codes);
 			list.add(person);
@@ -128,11 +154,14 @@ public class TestService implements ITestService {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		Object[][] array = new Object[len][12];
+		if (localObjects.get() == null) {
+			localObjects.set(new Object[len][15]);
+		}
+		Object[][] array = localObjects.get();
+		System.out.println(Thread.currentThread().getName() + ":" + array.hashCode());
 		for (int count = 0; count < len; ++count) {
 			Human human = buildHuman(map, pMap, codes);
-			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
+			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district,thread,create_time
 			int i = 0;
 			array[count][i++] = human.getName();
 			array[count][i++] = human.getAge();
@@ -146,6 +175,9 @@ public class TestService implements ITestService {
 			array[count][i++] = human.getVillage();
 			array[count][i++] = human.getProvince();
 			array[count][i++] = human.getDistrict();
+			array[count][i++] = Thread.currentThread().getName();
+			array[count][i++] = new Date();
+			array[count][i++] = array[count].hashCode();
 		}
 		return array;
 	}
@@ -161,11 +193,13 @@ public class TestService implements ITestService {
 			e.printStackTrace();
 		}
 
-		List<List<Object>> array = new ArrayList<List<Object>>(len);
+		if (localArrayObject.get() == null) {
+			localArrayObject.set(new ArrayList<List<Object>>(len));
+		}
+		List<List<Object>> array = localArrayObject.get();
 		for (int count = 0; count < len; ++count) {
 			Human human = buildHuman(map, pMap, codes);
 			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
-			int i = 0;
 			ArrayList<Object> array1 = new ArrayList<Object>();
 			array1.add(human.getName());
 			array1.add(human.getAge());
@@ -264,8 +298,10 @@ public class TestService implements ITestService {
 		if (province.equals("中华人民共和国")) {
 			System.out.println();
 		}
-		Human person = new Human(ChineseName.getRandomName(), age_rand, sex_rand == 0 ? false : true, occupation_rand, education_rand, cal.getTime(), city,
-				province + city + district + town + village + new Random().nextInt(200) + "号", town, village, province, district);
+		Human person = new Human(ChineseName.getRandomName(), age_rand, sex_rand == 0 ? false : true, occupation_rand,
+				education_rand, cal.getTime(), city,
+				province + city + district + town + village + new Random().nextInt(200) + "号", town, village, province,
+				district);
 		return person;
 	}
 
@@ -276,7 +312,8 @@ public class TestService implements ITestService {
 			List<Integer> codes = new ArrayList<>();
 			List<Integer> pCodes = new ArrayList<>();
 			try {
-				FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+				FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t",
+						2);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -284,8 +321,8 @@ public class TestService implements ITestService {
 			Long begin = System.currentTimeMillis();
 			Connection conn = new DBHelper().getConnection();
 			conn.setAutoCommit(false);
-			PreparedStatement pst = conn
-					.prepareStatement("insert into person(name,age,sex,occupation,education,birthday,city,adress,town,village,province,district) values(?,?,?,?,?,?,?,?,?,?,?,?)");
+			PreparedStatement pst = conn.prepareStatement(
+					"insert into person(name,age,sex,occupation,education,birthday,city,adress,town,village,province,district) values(?,?,?,?,?,?,?,?,?,?,?,?)");
 			final int batchSize = 100000;
 			int count = 0;
 			for (; count < 100; ++count) {
@@ -405,7 +442,8 @@ public class TestService implements ITestService {
 			Long begin = System.currentTimeMillis();
 			Connection conn = new DBHelper().getConnection();
 			conn.setAutoCommit(false);
-			PreparedStatement pst = conn.prepareStatement("insert into area(area_code,area_name,areap_parent_code,area_type) values(?,?,?,?)");
+			PreparedStatement pst = conn.prepareStatement(
+					"insert into area(area_code,area_name,areap_parent_code,area_type) values(?,?,?,?)");
 			final int batchSize = 1000;
 			int count = 0;
 			ArrayList<String[]> values = new ArrayList<>();

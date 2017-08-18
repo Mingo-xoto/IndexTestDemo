@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.connection;
+package com.yhq.IndexTestDemo.common.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

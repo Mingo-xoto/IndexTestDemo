@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.pojo;
+package com.yhq.IndexTestDemo.web.pojo;
 
 import java.util.Date;
 
@@ -10,21 +10,33 @@ import java.util.Date;
  * @author HuaQi.Yang
  * @date 2017年8月17日
  */
-public class Human {
+public class Person {
 
 	private int id;
-	private String name;// ` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '姓名',
+	private String name;// ` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT ''
+						// COMMENT '姓名',
 	private int age;// ` int(11) NOT NULL DEFAULT '0' COMMENT '年龄',
 	private boolean sex;// ` tinyint(4) NOT NULL DEFAULT '0' COMMENT '性别',
-	private int occupation;// ` int(11) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '职业',
+	private int occupation;// ` varchar(50) CHARACTER SET utf8 NOT NULL
+							// DEFAULT '' COMMENT '职业',
 	private int education;// ` int(11) NOT NULL DEFAULT '0' COMMENT '学历',
-	private Date birthday;// ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生日',
-	private String city;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '所在城市',
-	private String adress;// ` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '详细地址',
-	private String town;// ` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '镇',
-	private String village;// ` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '村',
-	private String province;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '省份',
-	private String district;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '区',
+	private Date birthday;// ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+							// COMMENT '生日',
+	private String city;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT ''
+						// COMMENT '所在城市',
+	private String adress;// ` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT
+							// '' COMMENT '详细地址',
+	private String town;// ` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT ''
+						// COMMENT '镇',
+	private String village;// ` varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT
+							// '' COMMENT '村',
+	private String province;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT
+							// '' COMMENT '省份',
+	private String district;// ` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT
+							// '' COMMENT '区',
+	private String thread;
+	private Date createTime;
+	private int hashCode;
 
 	public int getId() {
 		return id;
@@ -130,9 +142,35 @@ public class Human {
 		this.district = district;
 	}
 
-	public Human(String name, int age, boolean sex, int occupation, int education, Date birthday, String city, String adress, String town, String village, String province,
-			String district) {
+	public String getThread() {
+		return thread;
+	}
+
+	public void setThread(String thread) {
+		this.thread = thread;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public int getHashCode() {
+		return hashCode;
+	}
+
+	public void setHashCode(int hashCode) {
+		this.hashCode = hashCode;
+	}
+
+	public Person(int id, String name, int age, boolean sex, int occupation, int education, Date birthday, String city,
+			String adress, String town, String village, String province, String district, String thread,
+			Date createTime, int hashCode) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.age = age;
 		this.sex = sex;
@@ -145,6 +183,9 @@ public class Human {
 		this.village = village;
 		this.province = province;
 		this.district = district;
+		this.thread = thread;
+		this.createTime = createTime;
+		this.hashCode = hashCode;
 	}
 
 }

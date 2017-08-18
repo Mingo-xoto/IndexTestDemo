@@ -10,14 +10,21 @@ public class ThreadPoolExecutorTest {
 
 	}
 
+	final static ThreadLocal<Object[]> localObjects = new ThreadLocal<>();
+
 	@Test
 	public void test() {
-		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
-		for (int i = 0; i < 10; i++) {
+		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+		for (int i = 0; i < 100; i++) {
 			final int index = i;
 			fixedThreadPool.execute(new Runnable() {
 				public void run() {
-					System.out.println(index);
+					if (localObjects.get() == null) {
+						localObjects.set(new Object[12]);
+					}
+					Object[] objects = localObjects.get();
+					System.out.println(Thread.currentThread().getName() + ":" + localObjects.get().hashCode());
+					System.out.println(Thread.currentThread().getName() + ":" + objects.hashCode());
 				}
 			});
 		}

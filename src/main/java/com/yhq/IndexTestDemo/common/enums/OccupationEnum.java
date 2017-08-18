@@ -1,4 +1,4 @@
-package com.yhq.IndexTestDemo.enums;
+package com.yhq.IndexTestDemo.common.enums;
 
 /**
  * @author HuaQi.Yang

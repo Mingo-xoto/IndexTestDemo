@@ -14,7 +14,7 @@ CREATE TABLE `person` (
   `name` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '姓名',
   `age` int(11) NOT NULL DEFAULT '0' COMMENT '年龄',
   `sex` tinyint(4) NOT NULL DEFAULT '0' COMMENT '性别',
-  `occupation` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '职业',
+  `occupation` int(11) NOT NULL DEFAULT '0' COMMENT '职业',
   `education` int(11) NOT NULL DEFAULT '0' COMMENT '学历',
   `birthday` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生日',
   `city` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '所在城市',
@@ -23,6 +23,9 @@ CREATE TABLE `person` (
   `village` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '村',
   `province` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '省份',
   `district` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '区',
+  `thread` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '线程名称',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `hash_code` int  NOT NULL DEFAULT '0' COMMENT '记录哈希码',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
-import com.yhq.IndexTestDemo.Constants.FamilyName;
+import com.yhq.IndexTestDemo.common.constants.FamilyName;
 
 /**
  * @author HuaQi.Yang

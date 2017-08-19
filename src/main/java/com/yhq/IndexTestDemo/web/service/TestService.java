@@ -1,6 +1,9 @@
 package com.yhq.IndexTestDemo.web.service;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +39,9 @@ import com.yhq.IndexTestDemo.web.pojo.Human;
 
 @Service
 public class TestService implements ITestService {
+
+	@Value("${jar}")
+	private boolean jar;
 
 	@Autowired
 	private TestMapper testMapper;
@@ -89,7 +99,7 @@ public class TestService implements ITestService {
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void batchInsert4(int len) {
 		Object[][] array = buildArray2(len);
-		 testMapper.batchInsertArray2(array);
+		testMapper.batchInsertArray2(array);
 	}
 
 	static DBHelper db1 = null;
@@ -128,8 +138,15 @@ public class TestService implements ITestService {
 		// List<Integer> codes = new ArrayList<>();
 		// List<Integer> pCodes = new ArrayList<>();
 		// try {
+		// InputStream fis = null;
+		// if (jar)
+		// fis = this.getClass().getResourceAsStream("/static/area.txt");
+		// else
+		// fis = new
+		// FileInputStream(ResourceUtils.getFile("classpath:static/area.txt"));
+		//
 		// FileReaderTool.map(map, pMap, codes, pCodes,
-		// ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+		// fis, "\t\t", 2);
 		// } catch (FileNotFoundException e) {
 		// e.printStackTrace();
 		// }
@@ -151,7 +168,12 @@ public class TestService implements ITestService {
 		List<Integer> codes = new ArrayList<>();
 		List<Integer> pCodes = new ArrayList<>();
 		try {
-			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+			InputStream fis = null;
+			if (jar)
+				fis = this.getClass().getResourceAsStream("/static/area.txt");
+			else
+				fis = new FileInputStream(ResourceUtils.getFile("classpath:static/area.txt"));
+			FileReaderTool.map(map, pMap, codes, pCodes, fis, "\t\t", 2);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -203,7 +225,12 @@ public class TestService implements ITestService {
 		List<Integer> codes = new ArrayList<>();
 		List<Integer> pCodes = new ArrayList<>();
 		try {
-			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+			InputStream fis = null;
+			if (jar)
+				fis = this.getClass().getResourceAsStream("/static/area.txt");
+			else
+				fis = new FileInputStream(ResourceUtils.getFile("classpath:static/area.txt"));
+			FileReaderTool.map(map, pMap, codes, pCodes, fis, "\t\t", 2);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -360,8 +387,8 @@ public class TestService implements ITestService {
 			List<Integer> codes = new ArrayList<>();
 			List<Integer> pCodes = new ArrayList<>();
 			try {
-				FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t",
-						2);
+				FileInputStream fis = new FileInputStream(ResourceUtils.getFile("classpath:static/area.txt"));
+				FileReaderTool.map(map, pMap, codes, pCodes, fis, "\t\t", 2);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

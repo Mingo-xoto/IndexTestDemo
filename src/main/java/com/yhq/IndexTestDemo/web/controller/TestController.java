@@ -114,12 +114,9 @@ public class TestController {
 				}
 				int size = doneIndexs.size();
 				System.out.println("未完成工作的线程数：" + size);
+				int cout = 0;
 				while (size > 0) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					int ts = size;
 					// 循环遍历前一次未完成线程下标列表
 					for (int i = 0; i < size; ++i) {
 						// 逐渐移除已经完成工作的线程下标
@@ -127,6 +124,14 @@ public class TestController {
 						if (doneThred[index]) {
 							doneIndexs.remove(index);
 							size--;
+						}
+					}
+					if (ts == size) {
+						System.out.println(cout+"-->当前为完成线程数:"+ts);
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
 				}

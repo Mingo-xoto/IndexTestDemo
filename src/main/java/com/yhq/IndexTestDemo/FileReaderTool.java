@@ -5,12 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-
-import com.yhq.IndexTestDemo.common.constants.FamilyName;
 
 /**
  * @author HuaQi.Yang
@@ -51,11 +50,10 @@ public class FileReaderTool {
 		}
 	}
 
-	public static void map(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes, List<Integer> pCodes, File file, String fix, int skipLine) {
-		FileInputStream fis = null;
+	public static void map(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes,
+			List<Integer> pCodes, InputStream fis, String fix, int skipLine) {
 		BufferedReader br = null;
 		try {
-			fis = new FileInputStream(file);
 			br = new BufferedReader(new InputStreamReader(fis, "utf-8"));
 			for (int i = 0; i < skipLine; ++i) {
 				br.readLine();

@@ -10,7 +10,7 @@ public class ThreadPoolExecutorTest {
 
 	}
 
-	final static ThreadLocal<Object[]> localObjects = new ThreadLocal<>();
+	final static ThreadLocal<Object[][]> localObjects = new ThreadLocal<>();
 
 	@Test
 	public void test() {
@@ -20,11 +20,19 @@ public class ThreadPoolExecutorTest {
 			fixedThreadPool.execute(new Runnable() {
 				public void run() {
 					if (localObjects.get() == null) {
-						localObjects.set(new Object[12]);
+						Object[][]  objects= new Object[12][3];
+						localObjects.set(objects);
 					}
-					Object[] objects = localObjects.get();
+					Object[][] objects = localObjects.get();
 					System.out.println(Thread.currentThread().getName() + ":" + localObjects.get().hashCode());
 					System.out.println(Thread.currentThread().getName() + ":" + objects.hashCode());
+					for (Object[] objects2 : objects) {
+						System.out.println("次级:" + objects2.hashCode());
+						for (int i = 0;i < objects2.length;++i) {
+							objects2[i] = objects.hashCode() + objects2.hashCode()+"-";
+							System.out.println("末级：" + objects2[i]);
+						}
+					}
 				}
 			});
 		}

@@ -89,7 +89,7 @@ public class TestService implements ITestService {
 	@Transactional(value = "transactionManager", rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void batchInsert4(int len) {
 		Object[][] array = buildArray2(len);
-		testMapper.batchInsertArray2(array);
+		 testMapper.batchInsertArray2(array);
 	}
 
 	static DBHelper db1 = null;
@@ -123,24 +123,25 @@ public class TestService implements ITestService {
 	}
 
 	private List<Human> buildList(int len) {
-		Map<Integer, Object[]> map = new HashMap<>();
-		Map<Integer, int[]> pMap = new HashMap<>();
-		List<Integer> codes = new ArrayList<>();
-		List<Integer> pCodes = new ArrayList<>();
-		try {
-			FileReaderTool.map(map, pMap, codes, pCodes, ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
+		// Map<Integer, Object[]> map = new HashMap<>();
+		// Map<Integer, int[]> pMap = new HashMap<>();
+		// List<Integer> codes = new ArrayList<>();
+		// List<Integer> pCodes = new ArrayList<>();
+		// try {
+		// FileReaderTool.map(map, pMap, codes, pCodes,
+		// ResourceUtils.getFile("classpath:static/area.txt"), "\t\t", 2);
+		// } catch (FileNotFoundException e) {
+		// e.printStackTrace();
+		// }
+		//
 		if (localHumans.get() == null) {
 			localHumans.set(new ArrayList<Human>(len));
 		}
 		List<Human> list = localHumans.get();
-		for (int count = 0; count < len; ++count) {
-			Human person = buildHuman(map, pMap, codes);
-			list.add(person);
-		}
+		// for (int count = 0; count < len; ++count) {
+		//// Human person = buildHuman(map, pMap, codes);
+		// list.add(person);
+		// }
 		return list;
 	}
 
@@ -158,26 +159,40 @@ public class TestService implements ITestService {
 			localObjects.set(new Object[len][15]);
 		}
 		Object[][] array = localObjects.get();
-		System.out.println(Thread.currentThread().getName() + ":" + array.hashCode());
 		for (int count = 0; count < len; ++count) {
-			Human human = buildHuman(map, pMap, codes);
+			buildSingleRecord(array[count], map, pMap, codes);
+			// Human human = buildHuman(map, pMap, codes);
 			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district,thread,create_time
-			int i = 0;
-			array[count][i++] = human.getName();
-			array[count][i++] = human.getAge();
-			array[count][i++] = human.isSex();
-			array[count][i++] = human.getOccupation();
-			array[count][i++] = human.getEducation();
-			array[count][i++] = human.getBirthday();
-			array[count][i++] = human.getCity();
-			array[count][i++] = human.getAdress();
-			array[count][i++] = human.getTown();
-			array[count][i++] = human.getVillage();
-			array[count][i++] = human.getProvince();
-			array[count][i++] = human.getDistrict();
-			array[count][i++] = Thread.currentThread().getName();
-			array[count][i++] = new Date();
-			array[count][i++] = array[count].hashCode();
+			int i = 11;
+			// array[count][i] = human.getName();
+			// i++;
+			// array[count][i] = human.getAge();
+			// i++;
+			// array[count][i] = human.isSex();
+			// i++;
+			// array[count][i] = human.getOccupation();
+			// i++;
+			// array[count][i] = human.getEducation();
+			// i++;
+			// array[count][i] = human.getBirthday();
+			// i++;
+			// array[count][i] = human.getCity();
+			// i++;
+			// array[count][i] = human.getAdress();
+			// i++;
+			// array[count][i] = human.getTown();
+			// i++;
+			// array[count][i] = human.getVillage();
+			// i++;
+			// array[count][i] = human.getProvince();
+			// i++;
+			// array[count][i] = human.getDistrict();
+			i++;
+			array[count][i] = Thread.currentThread().getName();
+			i++;
+			array[count][i] = new Date();
+			i++;
+			array[count][i] = array[count].hashCode();
 		}
 		return array;
 	}
@@ -198,27 +213,34 @@ public class TestService implements ITestService {
 		}
 		List<List<Object>> array = localArrayObject.get();
 		for (int count = 0; count < len; ++count) {
-			Human human = buildHuman(map, pMap, codes);
-			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
+			// Human human = buildHuman(map, pMap, codes);
+			Object[] record = new Object[15];
+			buildSingleRecord(record, map, pMap, pCodes);
 			ArrayList<Object> array1 = new ArrayList<Object>();
-			array1.add(human.getName());
-			array1.add(human.getAge());
-			array1.add(human.isSex());
-			array1.add(human.getOccupation());
-			array1.add(human.getEducation());
-			array1.add(human.getBirthday());
-			array1.add(human.getCity());
-			array1.add(human.getAdress());
-			array1.add(human.getTown());
-			array1.add(human.getVillage());
-			array1.add(human.getProvince());
-			array1.add(human.getDistrict());
+			for (Object col : record) {
+				if (col != null)
+					array1.add(col);
+			}
+			// name,age,sex,occupation,education,birthday,city,adress,town,village,province,district
+			// array1.add(human.getName());
+			// array1.add(human.getAge());
+			// array1.add(human.isSex());
+			// array1.add(human.getOccupation());
+			// array1.add(human.getEducation());
+			// array1.add(human.getBirthday());
+			// array1.add(human.getCity());
+			// array1.add(human.getAdress());
+			// array1.add(human.getTown());
+			// array1.add(human.getVillage());
+			// array1.add(human.getProvince());
+			// array1.add(human.getDistrict());
 			array.add(array1);
 		}
 		return array;
 	}
 
-	private Human buildHuman(Map<Integer, Object[]> map, Map<Integer, int[]> pMap, List<Integer> codes) {
+	private void buildSingleRecord(Object[] array, Map<Integer, Object[]> map, Map<Integer, int[]> pMap,
+			List<Integer> codes) {
 		int occupation_rand = new Random().nextInt(6);
 		int education_rand = new Random().nextInt(7);
 		int sex_rand = new Random().nextInt(2);
@@ -298,11 +320,37 @@ public class TestService implements ITestService {
 		if (province.equals("中华人民共和国")) {
 			System.out.println();
 		}
-		Human person = new Human(ChineseName.getRandomName(), age_rand, sex_rand == 0 ? false : true, occupation_rand,
-				education_rand, cal.getTime(), city,
-				province + city + district + town + village + new Random().nextInt(200) + "号", town, village, province,
-				district);
-		return person;
+		int i = 0;
+		array[i] = ChineseName.getRandomName();
+		i++;
+		array[i] = age_rand;
+		i++;
+		array[i] = sex_rand;
+		i++;
+		array[i] = occupation_rand;
+		i++;
+		array[i] = education_rand;
+		i++;
+		array[i] = cal.getTime();
+		i++;
+		array[i] = city;
+		i++;
+		array[i] = province + city + district + town + village + new Random().nextInt(200) + "号";
+		i++;
+		array[i] = town;
+		i++;
+		array[i] = village;
+		i++;
+		array[i] = province;
+		i++;
+		array[i] = district;
+		// Human person = new Human(ChineseName.getRandomName(), age_rand,
+		// sex_rand == 0 ? false : true, occupation_rand,
+		// education_rand, cal.getTime(), city,
+		// province + city + district + town + village + new
+		// Random().nextInt(200) + "号", town, village, province,
+		// district);
+		// return person;
 	}
 
 	private static void insertPersonData() {

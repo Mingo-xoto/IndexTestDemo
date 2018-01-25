@@ -15,8 +15,10 @@ spring:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
 logging:
-  level: null
+  level: INFO
   root: DEBUG
+  #path: /log
+  file: my.log
   org:
     springframework:
       web: DEBUG
